@@ -829,6 +829,7 @@ def render_stores_styles() -> None:
             display: inline-flex; align-items: center; border-radius: 999px; background: #e8f1ff; color: #0b63f6;
             font-size: 11px; font-weight: 800; padding: 4px 8px; margin-top: 5px;
         }
+        .stores-mobile-card { display: none; }
         .stores-table-head {
             display: grid; grid-template-columns: 1.1fr 1.75fr 0.95fr 0.75fr 0.7fr; gap: 16px; align-items: center;
             min-height: 38px; color: #40588c; font-size: 13px; font-weight: 700; border: 1px solid #dce4f0;
@@ -981,6 +982,113 @@ def render_stores_styles() -> None:
             .stores-stats { grid-template-columns: 1fr; }
             .stores-table-head { display: none; }
         }
+        @media (max-width: 760px) {
+            div[class*="st-key-store_row_"] {
+                position: relative;
+                padding: 14px !important;
+                border-radius: 8px;
+                box-shadow: 0 5px 14px rgba(12, 32, 68, 0.05);
+            }
+
+            .stores-mobile-card {
+                display: grid;
+                gap: 10px;
+                padding-right: 0;
+            }
+
+            .stores-mobile-head {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .stores-mobile-name {
+                color: var(--summary-ink);
+                font-size: 15px;
+                font-weight: 800;
+                line-height: 1.2;
+                overflow-wrap: anywhere;
+            }
+
+            .stores-mobile-address {
+                display: grid;
+                gap: 4px;
+                padding: 10px 12px;
+                border: 1px solid #e1e9f5;
+                border-radius: 8px;
+                background: #fbfdff;
+            }
+
+            .stores-mobile-address-main {
+                color: #14306a;
+                font-size: 13px;
+                font-weight: 800;
+                line-height: 1.28;
+                overflow-wrap: anywhere;
+            }
+
+            .stores-mobile-address-sub,
+            .stores-mobile-address-city {
+                color: #40588c;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 1.25;
+                overflow-wrap: anywhere;
+            }
+
+            div[class*="st-key-store_row_"] .stores-status-pill {
+                min-width: 74px;
+                min-height: 28px;
+                padding: 6px 12px;
+                margin-top: 2px;
+                border-radius: 999px;
+                font-size: 12px;
+            }
+
+            div[class*="st-key-store_row_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:not(:has(button)) {
+                display: none !important;
+            }
+
+            div[class*="st-key-store_row_"] [data-testid="stHorizontalBlock"] > [data-testid="stColumn"]:has(button) {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+
+            div[class*="st-key-store_row_"] div[class*="st-key-store_edit_"],
+            div[class*="st-key-store_row_"] div[class*="st-key-store_delete_"] {
+                position: static !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+            }
+
+            div[class*="st-key-store_row_"] div[class*="st-key-store_edit_"] button,
+            div[class*="st-key-store_row_"] div[class*="st-key-store_delete_"] button {
+                width: 100% !important;
+                height: 42px !important;
+                min-height: 42px !important;
+                border-radius: 10px !important;
+                box-shadow: 0 4px 10px rgba(12, 32, 68, 0.06);
+            }
+
+            div[class*="st-key-store_row_"] div[class*="st-key-store_edit_"] button {
+                border-color: #c8d7ed !important;
+                background: #f8fbff !important;
+            }
+
+            div[class*="st-key-store_row_"] div[class*="st-key-store_delete_"] button {
+                border-color: #fecaca !important;
+                background: #fff8f8 !important;
+            }
+
+            div[class*="st-key-store_row_"] div[class*="st-key-store_edit_"] button:after,
+            div[class*="st-key-store_row_"] div[class*="st-key-store_delete_"] button:after {
+                width: 18px;
+                height: 18px;
+            }
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -1056,6 +1164,46 @@ def store_status_html(store: pd.Series) -> str:
     if has_valid_coordinates(store):
         return '<span class="stores-status-pill active">Ativa</span>'
     return '<span class="stores-status-pill pending">Pendente</span>'
+
+
+def store_mobile_card_html(store: pd.Series, edit_pill: str) -> str:
+    parts = split_saved_address(str(store.get("endereco", "")))
+    street = clean_text_value(parts.get("address", ""))
+    number = clean_text_value(parts.get("number", ""))
+    neighborhood = clean_text_value(parts.get("neighborhood", ""))
+    city = clean_text_value(parts.get("city", ""))
+    state = clean_text_value(parts.get("state", ""))
+    cep = clean_text_value(parts.get("cep", ""))
+    raw_address = clean_text_value(store.get("endereco", ""))
+
+    address_main = " ".join(part for part in [street, number] if part).strip()
+    if not address_main:
+        address_main = raw_address.split(",")[0].strip() if raw_address else "-"
+
+    location_parts = []
+    if neighborhood:
+        location_parts.append(neighborhood)
+    if city or state:
+        location_parts.append(f"{city} / {state}".strip(" /"))
+    address_city = " - ".join(location_parts) or store_city_state(store)
+    address_sub = f"CEP {cep}" if cep else ""
+
+    return (
+        '<div class="stores-mobile-card">'
+        '<div class="stores-mobile-head">'
+        '<div>'
+        f'<div class="stores-mobile-name">{escape(str(store.get("nome", "")))}</div>'
+        f'{edit_pill}'
+        '</div>'
+        f'{store_status_html(store)}'
+        '</div>'
+        '<div class="stores-mobile-address">'
+        f'<div class="stores-mobile-address-main">{escape(address_main)}</div>'
+        f'<div class="stores-mobile-address-city">{escape(address_city)}</div>'
+        f'<div class="stores-mobile-address-sub">{escape(address_sub)}</div>'
+        '</div>'
+        '</div>'
+    )
 
 
 def filter_store_rows(stores: pd.DataFrame, search_term: str, status_filter: str, sort_option: str) -> pd.DataFrame:
@@ -1379,8 +1527,9 @@ def stores_editor(stores: pd.DataFrame) -> None:
             for _, store in page_stores.iterrows():
                 store_id = int(store["id"])
                 with st.container(key=f"store_row_{store_id}"):
-                    row_col_name, row_col_address, row_col_city, row_col_status, row_col_actions = st.columns([1.1, 1.75, 0.95, 0.75, 0.7])
                     edit_pill = '<div class="stores-row-edit-pill">Em edicao</div>' if editing_id and store_id == int(editing_id) else ""
+                    st.markdown(store_mobile_card_html(store, edit_pill), unsafe_allow_html=True)
+                    row_col_name, row_col_address, row_col_city, row_col_status, row_col_actions = st.columns([1.1, 1.75, 0.95, 0.75, 0.7])
                     row_col_name.markdown(f'<div class="stores-row-name">{escape(str(store.get("nome", "")))}</div>{edit_pill}', unsafe_allow_html=True)
                     row_col_address.markdown(escape(str(store.get("endereco", "-"))), unsafe_allow_html=True)
                     row_col_city.markdown(escape(store_city_state(store)), unsafe_allow_html=True)
@@ -2039,42 +2188,74 @@ def add_route_map_legend(map_obj: folium.Map) -> None:
         {% macro html(this, kwargs) %}
         <style>
         .route-map-legend {
-            min-width: 136px;
-            padding: 14px 16px;
+            min-width: 124px;
+            padding: 11px 12px;
             background: rgba(255, 255, 255, 0.97);
             border: 1px solid #dbe7f6;
-            border-radius: 10px;
-            box-shadow: 0 8px 22px rgba(12, 32, 68, 0.16);
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(12, 32, 68, 0.14);
             color: #18336f;
-            font: 700 13px Inter, Arial, sans-serif;
+            font: 700 12px Inter, Arial, sans-serif;
             line-height: 1;
         }
         .route-map-legend-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            min-height: 24px;
-            margin-bottom: 10px;
+            gap: 8px;
+            min-height: 22px;
+            margin-bottom: 8px;
             white-space: nowrap;
         }
         .route-map-legend-row:last-child { margin-bottom: 0; }
         .route-map-legend-icon {
-            width: 23px;
-            height: 23px;
+            width: 21px;
+            height: 21px;
             border-radius: 50%;
             display: inline-grid;
             place-items: center;
             color: #ffffff;
-            flex: 0 0 23px;
+            flex: 0 0 21px;
         }
         .route-map-legend-icon.cd { background: #0b63f6; }
         .route-map-legend-icon.store { background: #4aa43f; }
         .route-map-legend-line {
-            width: 32px;
+            width: 28px;
             height: 4px;
             border-radius: 999px;
             background: #2563eb;
-            flex: 0 0 32px;
+            flex: 0 0 28px;
+        }
+        @media (max-width: 480px) {
+            .route-map-legend.leaflet-control {
+                margin-top: 8px !important;
+                margin-right: 8px !important;
+            }
+            .route-map-legend {
+                min-width: 104px !important;
+                padding: 8px 9px !important;
+                border-radius: 8px !important;
+                font-size: 11px !important;
+                box-shadow: 0 4px 12px rgba(12, 32, 68, 0.12) !important;
+            }
+            .route-map-legend-row {
+                gap: 7px !important;
+                min-height: 19px !important;
+                margin-bottom: 6px !important;
+            }
+            .route-map-legend-icon {
+                width: 18px !important;
+                height: 18px !important;
+                flex-basis: 18px !important;
+            }
+            .route-map-legend-icon svg {
+                width: 11px !important;
+                height: 11px !important;
+            }
+            .route-map-legend-line {
+                width: 22px !important;
+                height: 3px !important;
+                flex-basis: 22px !important;
+            }
         }
         </style>
         {% endmacro %}
@@ -2082,22 +2263,21 @@ def add_route_map_legend(map_obj: folium.Map) -> None:
         var routeMapLegend = L.control({position: 'topright'});
         routeMapLegend.onAdd = function(map) {
             var div = L.DomUtil.create('div', 'route-map-legend leaflet-control');
-            div.setAttribute('style', 'min-width:136px;padding:14px 16px;background:rgba(255,255,255,.97);border:1px solid #dbe7f6;border-radius:10px;box-shadow:0 8px 22px rgba(12,32,68,.16);color:#18336f;font:700 13px Inter,Arial,sans-serif;line-height:1;');
             div.innerHTML = `
-                <div style="display:flex;align-items:center;gap:10px;min-height:24px;margin-bottom:10px;white-space:nowrap;">
-                    <span style="width:23px;height:23px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:#0b63f6;flex:0 0 23px;">
+                <div class="route-map-legend-row">
+                    <span class="route-map-legend-icon cd">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
                     </span>
                     <span>CD</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;min-height:24px;margin-bottom:10px;white-space:nowrap;">
-                    <span style="width:23px;height:23px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;background:#4aa43f;flex:0 0 23px;">
+                <div class="route-map-legend-row">
+                    <span class="route-map-legend-icon store">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16l-1.5-6h-13L4 10Z"/><path d="M4 10v2a3 3 0 0 0 5 2.2A3 3 0 0 0 12 15a3 3 0 0 0 3-0.8A3 3 0 0 0 20 12v-2"/><path d="M6 15v6h12v-6"/></svg>
                     </span>
                     <span>Loja</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;min-height:24px;white-space:nowrap;">
-                    <span style="width:32px;height:4px;border-radius:999px;background:#2563eb;flex:0 0 32px;"></span>
+                <div class="route-map-legend-row">
+                    <span class="route-map-legend-line"></span>
                     <span>Rota calculada</span>
                 </div>`;
             L.DomEvent.disableClickPropagation(div);
@@ -2170,6 +2350,11 @@ def style_folium_embed(map_obj: folium.Map) -> None:
             }
 
             body > div[style*="z-index: 9999"] {
+                display: none !important;
+            }
+
+            .route-map-legend:not(.leaflet-control),
+            body > .route-map-legend {
                 display: none !important;
             }
 

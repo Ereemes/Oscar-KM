@@ -2490,6 +2490,10 @@ def render_dashboard_styles() -> None:
             padding: 20px 46px 28px 38px !important;
         }
 
+        .mobile-nav {
+            display: none;
+        }
+
         .sidebar-logo {
             display: flex;
             align-items: center;
@@ -4481,15 +4485,120 @@ def render_dashboard_styles() -> None:
         }
 
         @media (max-width: 760px) {
+            html, body {
+                overflow-x: hidden;
+            }
+
+            .stApp {
+                background: #fbfdff;
+            }
+
             [data-testid="stSidebar"] {
-                width: 100% !important;
+                display: none !important;
             }
-            [data-testid="stSidebar"] > div:first-child {
-                padding: 18px;
+
+            [data-testid="stHeader"] {
+                display: none !important;
             }
+
             .block-container {
-                padding: 22px 18px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 14px 14px 88px !important;
             }
+
+            .mobile-nav {
+                position: sticky;
+                top: 0;
+                z-index: 999;
+                display: block;
+                margin: -14px -14px 18px;
+                padding: 12px 14px 10px;
+                background: rgba(255, 255, 255, 0.96);
+                border-bottom: 1px solid #dbe3f0;
+                box-shadow: 0 8px 22px rgba(12, 32, 68, 0.08);
+                backdrop-filter: blur(12px);
+            }
+
+            .mobile-nav-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 10px;
+            }
+
+            .mobile-nav-brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+                color: var(--summary-ink);
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+            .mobile-nav-mark {
+                width: 36px;
+                height: 36px;
+                flex: 0 0 36px;
+                border-radius: 10px;
+                display: grid;
+                place-items: center;
+                color: #ffffff;
+                background: #0b63f6;
+            }
+
+            .mobile-nav-current {
+                color: #5b6f9c;
+                font-size: 12px;
+                font-weight: 800;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            .mobile-nav-scroll {
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+                padding-bottom: 2px;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .mobile-nav-scroll::-webkit-scrollbar {
+                display: none;
+            }
+
+            .mobile-nav-link {
+                flex: 0 0 auto;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                min-height: 38px;
+                padding: 0 12px;
+                border: 1px solid #dbe3f0;
+                border-radius: 999px;
+                color: #18336f !important;
+                background: #ffffff;
+                text-decoration: none !important;
+                font-size: 13px;
+                font-weight: 800;
+                line-height: 1;
+            }
+
+            .mobile-nav-link.active {
+                color: #ffffff !important;
+                border-color: #0b63f6;
+                background: #0b63f6;
+                box-shadow: 0 8px 16px rgba(11, 99, 246, 0.18);
+            }
+
+            .mobile-nav-link svg {
+                width: 17px;
+                height: 17px;
+            }
+
             .sidebar-logo {
                 margin-bottom: 18px;
             }
@@ -4519,15 +4628,103 @@ def render_dashboard_styles() -> None:
             .map-stats-grid, .map-metric-grid {
                 grid-template-columns: 1fr;
             }
-            .st-key-map_shell iframe[title="streamlit_folium.st_folium"] {
-                height: 480px !important;
+
+            [data-testid="stHorizontalBlock"] {
+                flex-wrap: wrap;
+                gap: 0.75rem !important;
             }
+
+            [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+                flex: 1 1 100% !important;
+                min-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .st-key-map_shell iframe[title="streamlit_folium.st_folium"] {
+                height: 430px !important;
+            }
+
+            .st-key-cd_real_map_shell iframe[title="streamlit_folium.st_folium"] {
+                height: 300px !important;
+            }
+
             .secondary-grid > .summary-card:nth-child(2) {
                 grid-column: auto;
             }
+
             .stat-card {
+                height: auto;
+                min-height: 92px;
                 padding: 18px;
+                gap: 16px;
             }
+
+            .icon-bubble,
+            .map-icon-bubble {
+                width: 46px;
+                height: 46px;
+                flex-basis: 46px;
+            }
+
+            .summary-h1,
+            .stores-title {
+                font-size: 28px;
+                line-height: 1.1;
+            }
+
+            .summary-title p,
+            .stores-subtitle {
+                font-size: 14px;
+                line-height: 1.35;
+            }
+
+            .summary-card,
+            .config-panel,
+            .cd-panel,
+            .st-key-config_form_panel,
+            .st-key-cd_form_panel,
+            .st-key-map_filters_panel,
+            .st-key-map_details_panel,
+            .st-key-stores_import_panel,
+            .st-key-stores_form_panel,
+            .st-key-stores_table_panel,
+            .help-card {
+                border-radius: 8px;
+                padding: 18px !important;
+                box-shadow: 0 4px 14px rgba(12, 32, 68, 0.05);
+            }
+
+            .config-stat-card,
+            .cd-stats-grid .config-stat-card,
+            .map-stat-card,
+            .stores-stat-card {
+                min-height: 88px;
+                grid-template-columns: 58px minmax(0, 1fr);
+                gap: 14px;
+                padding: 16px !important;
+            }
+
+            .config-stat-card .icon-bubble,
+            .cd-stats-grid .config-stat-card .icon-bubble {
+                width: 50px;
+                height: 50px;
+                flex-basis: 50px;
+            }
+
+            .config-stat-value,
+            .map-stat-value,
+            .stores-stat-value,
+            .stat-value {
+                font-size: 23px;
+                line-height: 1.08;
+                overflow-wrap: anywhere;
+            }
+
+            .panel,
+            .activity-panel {
+                padding: 18px !important;
+            }
+
             .info-row, .status-row, .activity-head, .activity-row {
                 grid-template-columns: 1fr;
                 gap: 8px;
@@ -4537,7 +4734,115 @@ def render_dashboard_styles() -> None:
                 min-height: auto;
             }
             .summary-topbar {
-                gap: 18px;
+                display: block;
+                margin-bottom: 16px;
+            }
+
+            .store-summary {
+                gap: 16px;
+            }
+
+            .donut {
+                width: 126px;
+                height: 126px;
+                margin: 0 auto;
+            }
+
+            .donut:before {
+                width: 76px;
+                height: 76px;
+            }
+
+            .config-preview-row,
+            .cd-detail-row {
+                grid-template-columns: 1fr;
+                gap: 4px;
+                align-items: start;
+            }
+
+            .config-preview-value,
+            .config-preview-sub,
+            .cd-detail-value {
+                text-align: left;
+                white-space: normal;
+            }
+
+            .map-route-title-row,
+            .map-activity-header {
+                grid-template-columns: 1fr;
+                display: grid;
+                gap: 10px;
+            }
+
+            .map-fixed-origin-address,
+            .map-point-sub,
+            .cd-card-sub {
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+            }
+
+            .map-metric-value {
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            .cd-card-head,
+            .map-point-card {
+                grid-template-columns: 54px minmax(0, 1fr);
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .st-key-stores_upload {
+                left: 18px;
+                right: 18px;
+                top: 62px;
+            }
+
+            .stores-table-head {
+                display: none;
+            }
+
+            div[class*="st-key-store_row_"] {
+                border: 1px solid #dce4f0;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                padding: 12px;
+                background: #ffffff;
+            }
+
+            div[class*="st-key-store_row_"] [data-testid="stMarkdownContainer"] p {
+                font-size: 14px;
+                line-height: 1.35;
+            }
+
+            .stores-count-caption,
+            .stores-page-status {
+                line-height: 1.35;
+                text-align: left;
+                white-space: normal;
+            }
+
+            .st-key-stores_pagination [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+                flex: 1 1 100% !important;
+                min-width: 100% !important;
+            }
+
+            .st-key-config_form_panel .stButton > button,
+            .st-key-config_form_panel [data-testid="stFormSubmitButton"] > button,
+            .st-key-cd_save button,
+            .st-key-cd_clear button {
+                min-height: 48px;
+                height: auto;
+                font-size: 16px;
+                padding: 10px 12px;
+                white-space: normal;
+            }
+
+            button p {
+                white-space: normal;
+                overflow-wrap: anywhere;
             }
         }
         </style>
@@ -4548,6 +4853,37 @@ def render_dashboard_styles() -> None:
 
 def nav_href(view: str) -> str:
     return f"?view={view}"
+
+
+def render_mobile_nav(current_view: str) -> None:
+    items = [
+        ("resumo", "Resumo", "route"),
+        ("configuracoes", "Config", "settings"),
+        ("cd", "CD", "home"),
+        ("lojas", "Lojas", "store"),
+        ("mapa", "Mapa", "map"),
+        ("ajuda", "Ajuda", "help"),
+    ]
+    current_label = next((label for key, label, _ in items if key == current_view), "Resumo")
+    links = "".join(
+        (
+            f'<a class="mobile-nav-link{" active" if key == current_view else ""}" '
+            f'href="{escape(nav_href(key))}" target="_self">{app_icon(icon, 17)}<span>{escape(label)}</span></a>'
+        )
+        for key, label, icon in items
+    )
+    st.markdown(
+        (
+            '<nav class="mobile-nav">'
+            '<div class="mobile-nav-head">'
+            f'<div class="mobile-nav-brand"><span class="mobile-nav-mark">{app_icon("map-pin", 20)}</span><span>Oscar 3</span></div>'
+            f'<div class="mobile-nav-current">{escape(current_label)}</div>'
+            '</div>'
+            f'<div class="mobile-nav-scroll">{links}</div>'
+            '</nav>'
+        ),
+        unsafe_allow_html=True,
+    )
 
 
 def render_sidebar(current_view: str) -> None:
@@ -5659,7 +5995,7 @@ def render_cd_dashboard(cd: pd.Series | None, routes: pd.DataFrame) -> None:
         render_cd_real_map(cd)
 
 def main() -> None:
-    st.set_page_config(page_title=APP_TITLE, layout="wide", initial_sidebar_state="expanded")
+    st.set_page_config(page_title=APP_TITLE, layout="wide", initial_sidebar_state="auto")
     render_dashboard_styles()
     ensure_storage()
 
@@ -5671,6 +6007,7 @@ def main() -> None:
     report = compute_report(cd, stores, config, routes)
     current_view = current_view_from_query()
     render_sidebar(current_view)
+    render_mobile_nav(current_view)
 
     coordinate_warning = st.session_state.pop("coordinate_warning", None)
     if coordinate_warning:
